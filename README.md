@@ -1,2 +1,4 @@
 # RCA-DNS_deployment
-Deployment of RCA-DNS aquitecture on commercial infraestructures
+
+This repository contains the deployment scripts and configuration for deploying
+an anycast service implementing the RCA-DNS architecture.
