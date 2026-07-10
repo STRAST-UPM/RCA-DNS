@@ -30,15 +30,17 @@ deploy_domain_infraestructure() {
 }
 
 ###############################################################################
-# Execution
+# Main
 ###############################################################################
 
-echo "Project: $PROJECT_ID"
-echo
+deploy_infraestructure_main() {
+    echo "Project: $PROJECT_ID"
+    echo
 
-for domain in "${!DOMAINS[@]}"; do
-    deploy_domain_infraestructure "$domain"
-done
+    for domain in "${!DOMAINS[@]}"; do
+        deploy_domain_infraestructure "$domain"
+    done
 
-echo
-show_forwarding_rules
+    echo
+    show_forwarding_rules
+}

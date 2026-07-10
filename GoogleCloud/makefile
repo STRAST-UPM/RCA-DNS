@@ -1,57 +1,29 @@
-.PHONY: deploy-infraestructure delete-infraestructure \
-		deploy-service delete-service
+
+.PHONY: deploy-infraestructure delete-infraestructure deploy-services delete-services
 
 GOOGLE_CLOUD_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 GOOGLE_CLOUD_SCRIPTS_DIR := $(GOOGLE_CLOUD_DIR)/scripts
-GOOGLE_CLOUD_AUXILIAR_FUNCTIONS_DIR := $(GOOGLE_CLOUD_DIR)/auxiliar
-ENV_FILE := $(GOOGLE_CLOUD_DIR)/.env
-LOG_DIR := $(GOOGLE_CLOUD_DIR)/logs
-LOG_FILE := $(LOG_DIR)/log_$(shell date +%Y-%m-%d_%H-%M-%S).log
 
-# Load environment variables from root .env and optional service .env.
-# $(1): service directory under services (e.g. ingress)
-define load_env
-	set -a; \
-	[ -f "$(ENV_FILE)" ] && . "$(ENV_FILE)"; \
-	[ -n "$(1)" ] && [ -f "$(SERVICES_DIR)/$(1)/.env" ] && . "$(SERVICES_DIR)/$(1)/.env"; \
-	set +a
+define run_with_loaded_scripts
+	bash -lc 'set -euo pipefail; \
+		source "$(GOOGLE_CLOUD_SCRIPTS_DIR)/bootstrap.sh"; \
+		bootstrap_load_scripts; \
+		$(1)'
 endef
 
-# Load auxiliar functions
-define load_auxiliar_function
-	bash $(GOOGLE_CLOUD_AUXILIAR_FUNCTIONS_DIR)/logs.sh
-	bash $(GOOGLE_CLOUD_AUXILIAR_FUNCTIONS_DIR)/utils.sh
-	bash $(GOOGLE_CLOUD_AUXILIAR_FUNCTIONS_DIR)/gc_resources.sh
-endef
-
-# Logging functions
-define info
-	mkdir -p $(LOG_DIR); \
-	echo "[INFO] [$(shell date '+%Y-%m-%d %H:%M:%S')] $(1)" | tee -a $(LOG_FILE)
-endef
-
-define warning
-	mkdir -p $(LOG_DIR); \
-	echo "[WARN] [$(shell date '+%Y-%m-%d %H:%M:%S')] $(1)" | tee -a $(LOG_FILE)
-endef
-
-define error
-	mkdir -p $(LOG_DIR); \
-	echo "[ERROR] [$(shell date '+%Y-%m-%d %H:%M:%S')] $(1)" | tee -a $(LOG_FILE)
-endef
 
 ###############################################################################
 # Targets
 ###############################################################################
 
 deploy-infraestructure:
-	bash $(GOOGLE_CLOUD_SCRIPTS_DIR)/deploy_infraestructure.sh
+	$(call run_with_loaded_scripts,deploy_infraestructure_main)
 
 delete-infraestructure:
-	bash $(GOOGLE_CLOUD_SCRIPTS_DIR)/delete_infraestructure.sh
+	$(call run_with_loaded_scripts,delete_infraestructure_main)
 
 deploy-services:
-	bash $(GOOGLE_CLOUD_SCRIPTS_DIR)/deploy_services.sh
+	$(call run_with_loaded_scripts,deploy_services_main)
 
 delete-services:
-	bash $(GOOGLE_CLOUD_SCRIPTS_DIR)/delete_services.sh
+	$(call run_with_loaded_scripts,delete_services_main)

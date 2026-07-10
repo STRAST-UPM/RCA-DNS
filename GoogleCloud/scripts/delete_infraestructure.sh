@@ -29,12 +29,16 @@ delete_domain_infraestructure() {
 }
 
 ###############################################################################
-# Execution
+# Main
 ###############################################################################
 
-echo "Project: $PROJECT_ID"
-echo
+delete_infraestructure_main() {
+    echo "Project: $PROJECT_ID"
+    echo
 
-for domain in "${!DOMAINS[@]}"; do
-    delete_domain_infraestructure "$domain"
-done
+    for domain in "${!DOMAINS[@]}"; do
+        delete_domain_infraestructure "$domain"
+    done
+}
+
+

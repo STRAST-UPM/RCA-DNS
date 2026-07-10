@@ -2,12 +2,14 @@
 set -e
 
 ###############################################################################
-# Execution
+# Main
 ###############################################################################
 
-echo "Project: $PROJECT_ID"
-echo
+deploy_services_main() {
+    echo "Project: $PROJECT_ID"
+    echo
 
-for region in "${REGIONS[@]}"; do
-    create_cloud_run_service "$region"
-done
+    for region in "${REGIONS[@]}"; do
+        create_cloud_run_service "$region"
+    done
+}
