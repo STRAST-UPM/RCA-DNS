@@ -24,6 +24,22 @@ define load_auxiliar_function
 	bash $(GOOGLE_CLOUD_AUXILIAR_FUNCTIONS_DIR)/gc_resources.sh
 endef
 
+# Logging functions
+define info
+	mkdir -p $(LOG_DIR); \
+	echo "[INFO] [$(shell date '+%Y-%m-%d %H:%M:%S')] $(1)" | tee -a $(LOG_FILE)
+endef
+
+define warning
+	mkdir -p $(LOG_DIR); \
+	echo "[WARN] [$(shell date '+%Y-%m-%d %H:%M:%S')] $(1)" | tee -a $(LOG_FILE)
+endef
+
+define error
+	mkdir -p $(LOG_DIR); \
+	echo "[ERROR] [$(shell date '+%Y-%m-%d %H:%M:%S')] $(1)" | tee -a $(LOG_FILE)
+endef
+
 ###############################################################################
 # Targets
 ###############################################################################
