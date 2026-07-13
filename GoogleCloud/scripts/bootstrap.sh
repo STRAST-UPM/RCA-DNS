@@ -27,15 +27,15 @@ touch "$LOG_FILE"
 # shellcheck disable=SC2034
 declare -gA DOMAINS
 
-DOMAINS["global.anycastprivacy.org"]="${DOMAIN_GLOBAL_REGIONS:-${REGIONS[*]}}"
-DOMAINS["africa.anycastprivacy.org"]="${DOMAIN_AFRICA_REGIONS:-}"
-DOMAINS["asia.anycastprivacy.org"]="${DOMAIN_ASIA_REGIONS:-}"
-DOMAINS["australia.anycastprivacy.org"]="${DOMAIN_AUSTRALIA_REGIONS:-}"
-DOMAINS["europe.anycastprivacy.org"]="${DOMAIN_EUROPE_REGIONS:-}"
-DOMAINS["middleeast.anycastprivacy.org"]="${DOMAIN_MIDDLEEAST_REGIONS:-}"
-DOMAINS["northamerica.anycastprivacy.org"]="${DOMAIN_NORTHAMERICA_REGIONS:-}"
-DOMAINS["us.anycastprivacy.org"]="${DOMAIN_US_REGIONS:-}"
-DOMAINS["southamerica.anycastprivacy.org"]="${DOMAIN_SOUTHAMERICA_REGIONS:-}"
+DOMAINS["global.$BASE_DOMAIN"]="${DOMAIN_GLOBAL_REGIONS:-${REGIONS[*]}}"
+DOMAINS["africa.$BASE_DOMAIN"]="${DOMAIN_AFRICA_REGIONS:-}"
+DOMAINS["asia.$BASE_DOMAIN"]="${DOMAIN_ASIA_REGIONS:-}"
+DOMAINS["australia.$BASE_DOMAIN"]="${DOMAIN_AUSTRALIA_REGIONS:-}"
+DOMAINS["europe.$BASE_DOMAIN"]="${DOMAIN_EUROPE_REGIONS:-}"
+DOMAINS["middleeast.$BASE_DOMAIN"]="${DOMAIN_MIDDLEEAST_REGIONS:-}"
+DOMAINS["northamerica.$BASE_DOMAIN"]="${DOMAIN_NORTHAMERICA_REGIONS:-}"
+DOMAINS["us.$BASE_DOMAIN"]="${DOMAIN_US_REGIONS:-}"
+DOMAINS["southamerica.$BASE_DOMAIN"]="${DOMAIN_SOUTHAMERICA_REGIONS:-}"
 
 bootstrap_load_scripts() {
     local file
