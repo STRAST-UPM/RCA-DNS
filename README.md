@@ -8,6 +8,8 @@ an anycast service implementing the RCA-DNS architecture.
 To run the deployment and deletion scripts under `GoogleCloud/`, you need an
 active Google Cloud CLI session and a project with required APIs enabled.
 
+- [Installation documentation](https://docs.cloud.google.com/sdk/docs/install-sdk)
+
 ### Required Tools
 
 - Google Cloud SDK (`gcloud`) installed and available in `PATH`.
