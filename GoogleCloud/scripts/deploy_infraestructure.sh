@@ -35,6 +35,7 @@ deploy_domain_infraestructure() {
 
 deploy_infraestructure_main() {
     log "Project: $PROJECT_ID"
+    gcloud config set project "$PROJECT_ID"
 
     for domain in "${!DOMAINS[@]}"; do
         deploy_domain_infraestructure "$domain"

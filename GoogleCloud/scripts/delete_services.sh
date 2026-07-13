@@ -7,6 +7,7 @@ set -e
 
 delete_services_main() {
     log "Project: $PROJECT_ID"
+    gcloud config set project "$PROJECT_ID"
 
     for region in "${REGIONS[@]}"; do
         delete_neg "$region"
