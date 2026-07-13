@@ -4,16 +4,23 @@
 # Logging
 ###############################################################################
 
+write_log() {
+    local level="$1"
+    shift
+
+    printf '[%s] %s\n' "$level" "$*" | tee -a "$LOG_FILE"
+}
+
 log() {
-    echo "[INFO] $*"
+    write_log INFO "$@"
 }
 
 warn() {
-    echo "[WARNING] $*" >&2
+    printf '[WARNING] %s\n' "$*" | tee -a "$LOG_FILE" >&2
 }
 
 error() {
-    echo "[ERROR] $*" >&2
+    printf '[ERROR] %s\n' "$*" | tee -a "$LOG_FILE" >&2
 }
 
 abort() {
