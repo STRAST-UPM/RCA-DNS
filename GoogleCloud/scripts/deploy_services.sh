@@ -6,8 +6,7 @@ set -e
 ###############################################################################
 
 deploy_services_main() {
-    echo "Project: $PROJECT_ID"
-    echo
+    log "Project: $PROJECT_ID"
 
     for region in "${REGIONS[@]}"; do
         create_cloud_run_service "$region"

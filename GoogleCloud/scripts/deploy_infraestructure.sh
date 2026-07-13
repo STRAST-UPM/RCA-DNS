@@ -34,13 +34,11 @@ deploy_domain_infraestructure() {
 ###############################################################################
 
 deploy_infraestructure_main() {
-    echo "Project: $PROJECT_ID"
-    echo
+    log "Project: $PROJECT_ID"
 
     for domain in "${!DOMAINS[@]}"; do
         deploy_domain_infraestructure "$domain"
     done
 
-    echo
     show_forwarding_rules
 }

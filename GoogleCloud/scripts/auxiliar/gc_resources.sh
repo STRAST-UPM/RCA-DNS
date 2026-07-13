@@ -98,6 +98,8 @@ create_cloud_run_service() {
     local service
     service=$(service_name "$region")
 
+    log "Ensuring Cloud Run service '$service' in region '$region'"
+
     run_if_missing \
         "Cloud Run service '$service'" \
         "gcloud run services describe \
@@ -153,6 +155,8 @@ create_neg() {
     neg=$(neg_name "$region")
     service=$(service_name "$region")
 
+    log "Ensuring serverless NEG '$neg' in region '$region'"
+
     run_if_missing \
         "Serverless NEG '$neg'" \
         "gcloud compute network-endpoint-groups describe \
@@ -199,6 +203,8 @@ create_backend() {
     local backend
 
     backend=$(backend_name "$domain")
+
+    log "Ensuring backend '$backend' for domain '$domain'"
 
     run_if_missing \
         "Backend '$backend'" \
@@ -291,6 +297,8 @@ create_url_map() {
     urlmap=$(urlmap_name "$domain")
     backend=$(backend_name "$domain")
 
+    log "Ensuring URL map '$urlmap' for domain '$domain'"
+
     run_if_missing \
         "URL Map '$urlmap'" \
         "gcloud compute url-maps describe \
@@ -332,6 +340,8 @@ create_ssl_certificate() {
     local certificate
 
     certificate=$(certificate_name "$domain")
+
+    log "Ensuring SSL certificate '$certificate' for domain '$domain'"
 
     run_if_missing \
         "SSL Certificate '$certificate'" \
@@ -376,6 +386,8 @@ create_http_proxy() {
 
     proxy=$(http_proxy_name "$domain")
     urlmap=$(urlmap_name "$domain")
+
+    log "Ensuring HTTP proxy '$proxy' for domain '$domain'"
 
     run_if_missing \
         "HTTP Proxy '$proxy'" \
@@ -423,6 +435,8 @@ create_https_proxy() {
     urlmap=$(urlmap_name "$domain")
     certificate=$(certificate_name "$domain")
 
+    log "Ensuring HTTPS proxy '$proxy' for domain '$domain'"
+
     run_if_missing \
         "HTTPS Proxy '$proxy'" \
         "gcloud compute target-https-proxies describe \
@@ -467,6 +481,8 @@ create_http_forwarding_rule() {
 
     rule=$(http_forwarding_rule_name "$domain")
     proxy=$(http_proxy_name "$domain")
+
+    log "Ensuring HTTP forwarding rule '$rule' for domain '$domain'"
 
     run_if_missing \
         "HTTP Forwarding Rule '$rule'" \
@@ -516,6 +532,8 @@ create_https_forwarding_rule() {
 
     rule=$(https_forwarding_rule_name "$domain")
     proxy=$(https_proxy_name "$domain")
+
+    log "Ensuring HTTPS forwarding rule '$rule' for domain '$domain'"
 
     run_if_missing \
         "HTTPS Forwarding Rule '$rule'" \

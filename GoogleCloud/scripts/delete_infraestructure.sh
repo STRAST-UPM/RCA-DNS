@@ -33,8 +33,7 @@ delete_domain_infraestructure() {
 ###############################################################################
 
 delete_infraestructure_main() {
-    echo "Project: $PROJECT_ID"
-    echo
+    log "Project: $PROJECT_ID"
 
     for domain in "${!DOMAINS[@]}"; do
         delete_domain_infraestructure "$domain"

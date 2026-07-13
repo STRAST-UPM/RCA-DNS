@@ -6,11 +6,10 @@ set -e
 ###############################################################################
 
 delete_services_main() {
-    echo "Project: $PROJECT_ID"
-    echo
+    log "Project: $PROJECT_ID"
 
     for region in "${REGIONS[@]}"; do
         delete_neg "$region"
         delete_cloud_run_service "$region"
-    done    
+    done
 }
