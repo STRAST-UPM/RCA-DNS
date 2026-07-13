@@ -12,7 +12,7 @@ env.bak/
 venv.bak/
 
 # Logs
-logs/*.log
+*.log
 
 # Editors and IDEs
 .idea/

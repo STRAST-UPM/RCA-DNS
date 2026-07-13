@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GOOGLE_CLOUD_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+GOOGLE_CLOUD_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$GOOGLE_CLOUD_DIR/.env"
 GOOGLE_CLOUD_DIR_SCRIPTS="$GOOGLE_CLOUD_DIR/scripts"
 LOGS_DIR="$GOOGLE_CLOUD_DIR/logs"
