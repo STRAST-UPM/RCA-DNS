@@ -10,6 +10,7 @@ Available targets:
 	delete-infraestructure  Delete the global/anycast infrastructure.
 	deploy-services         Deploy Cloud Run services and NEGs by region.
 	delete-services         Delete Cloud Run services and NEGs by region.
+	update-gcr-container    Build rcadns image and push it to Google Container Registry.
 
 Notes:
 	- Requires .env file at GoogleCloud/.env

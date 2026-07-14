@@ -4,7 +4,8 @@
 
 .PHONY: help noop \
 		deploy-infraestructure delete-infraestructure \
-		deploy-services delete-services
+		deploy-services delete-services \
+		update-gcr-container
 
 GOOGLE_CLOUD_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 GOOGLE_CLOUD_SCRIPTS_DIR := $(GOOGLE_CLOUD_DIR)/scripts
@@ -40,3 +41,6 @@ deploy-services:
 
 delete-services:
 	$(call bootstrap_run,delete_services_main)
+
+update-gcr-container:
+	$(call bootstrap_run,update_gcr_container)
