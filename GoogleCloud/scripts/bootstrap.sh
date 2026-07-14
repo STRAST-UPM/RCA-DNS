@@ -24,6 +24,9 @@ set +a
 
 touch "$LOG_FILE"
 
+# Capture all output from this shell (including external tools) to screen and log.
+exec > >(tee -a "$LOG_FILE") 2>&1
+
 # shellcheck disable=SC2034
 declare -gA DOMAINS
 

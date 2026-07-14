@@ -8,7 +8,7 @@ write_log() {
     local level="$1"
     shift
 
-    printf '[%s][%s] %s\n' "$level" "$(date +%Y%m%d_%H-%M-%S)"  "$*" | tee -a "$LOG_FILE"
+    printf '[%s][%s] %s\n' "$level" "$(date +%Y%m%d_%H-%M-%S)" "$*"
 }
 
 log() {
