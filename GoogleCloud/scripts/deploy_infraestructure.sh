@@ -14,7 +14,6 @@ deploy_domain_infraestructure() {
     create_backend "$domain"
 
     for region in ${DOMAINS[$domain]}; do
-        create_neg "$region"
         add_backend_region "$domain" "$region"
     done
 

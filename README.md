@@ -53,3 +53,29 @@ make delete-services
 make deploy-infraestructure
 make delete-infraestructure
 ```
+
+### Experiment arquitecture with Google Cloud resources
+
+```text
+                Cloudflare DNS
+                      │
+              global.domain.com
+                      │
+          IP Anycast (Google Cloud)
+                      │
+             Forwarding Rule (80/443)
+                      │
+               Target HTTP(S) Proxy
+                      │
+                  URL Map
+                      │
+              Backend Service
+                      │
+     ┌────────────────┼────────────────┐
+     │                │                │
+  NEG Madrid      NEG Tokio      NEG Iowa
+     │                │                │
+Cloud Run         Cloud Run       Cloud Run
+     │                │                │
+  Contenedor      Contenedor      Contenedor
+```

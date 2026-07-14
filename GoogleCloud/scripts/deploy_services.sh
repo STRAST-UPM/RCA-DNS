@@ -11,5 +11,6 @@ deploy_services_main() {
 
     for region in "${REGIONS[@]}"; do
         create_cloud_run_service "$region"
+        create_neg "$region"
     done
 }
