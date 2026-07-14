@@ -1,9 +1,15 @@
 
-.PHONY: deploy-infraestructure delete-infraestructure \
+.DEFAULT_GOAL := help
+
+
+.PHONY: help noop \
+		deploy-infraestructure delete-infraestructure \
 		deploy-services delete-services
 
 GOOGLE_CLOUD_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 GOOGLE_CLOUD_SCRIPTS_DIR := $(GOOGLE_CLOUD_DIR)/scripts
+GOOGLE_CLOUD_STATICS_DIR := $(GOOGLE_CLOUD_DIR)/statics
+HELP_FILE := $(GOOGLE_CLOUD_STATICS_DIR)/help.txt
 
 define bootstrap_run
 	bash -lc 'set -euo pipefail; \
@@ -16,6 +22,12 @@ endef
 ###############################################################################
 # Targets
 ###############################################################################
+
+help:
+	@cat "$(HELP_FILE)"
+
+noop:
+	@:
 
 deploy-infraestructure:
 	$(call bootstrap_run,deploy_infraestructure_main)

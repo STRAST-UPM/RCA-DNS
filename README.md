@@ -54,7 +54,7 @@ make deploy-infraestructure
 make delete-infraestructure
 ```
 
-### Experiment arquitecture with Google Cloud resources
+### Experimental architecture with Google Cloud resources
 
 ```text
                 Cloudflare DNS
@@ -73,9 +73,9 @@ make delete-infraestructure
                       │
      ┌────────────────┼────────────────┐
      │                │                │
-  NEG Madrid      NEG Tokio      NEG Iowa
+NEG Madrid      NEG Tokyo       NEG Iowa
      │                │                │
-Cloud Run         Cloud Run       Cloud Run
+Cloud Run       Cloud Run       Cloud Run
      │                │                │
-  Contenedor      Contenedor      Contenedor
+Container       Container       Container
 ```

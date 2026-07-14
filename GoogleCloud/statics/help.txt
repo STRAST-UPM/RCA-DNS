@@ -1,0 +1,16 @@
+Google Cloud Deployment - Help
+==============================
+
+Usage:
+	make <target>
+
+Available targets:
+	help                    Show this help.
+	deploy-infraestructure  Deploy the global/anycast infrastructure.
+	delete-infraestructure  Delete the global/anycast infrastructure.
+	deploy-services         Deploy Cloud Run services and NEGs by region.
+	delete-services         Delete Cloud Run services and NEGs by region.
+
+Notes:
+	- Requires .env file at GoogleCloud/.env
+	- Logs are stored in GoogleCloud/logs/
