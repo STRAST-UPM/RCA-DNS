@@ -255,6 +255,15 @@ add_backend_region() {
 
     log "Adding region '$region' to backend '$backend'"
 
+    if gcloud compute backend-services describe \
+        "$backend" \
+        --global \
+        --project="$PROJECT_ID" \
+        --format='json(backends)' | grep -Fq "/regions/$region/networkEndpointGroups/$neg"; then
+        log "Region '$region' is already attached to backend '$backend'."
+        return 0
+    fi
+
     gcloud compute backend-services add-backend \
         "$backend" \
         --global \
