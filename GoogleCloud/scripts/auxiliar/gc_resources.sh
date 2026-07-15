@@ -116,6 +116,7 @@ create_cloud_run_service() {
             --project='$PROJECT_ID' \
             --set-env-vars='REGION=$region'"
 
+    log "Waiting $WAIT_SECONDS seconds"
     sleep "$WAIT_SECONDS"
 }
 
