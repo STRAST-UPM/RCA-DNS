@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from .ripeatlas_provider import RIPEAtlasProvider
+from .providers.ripeatlas_provider import RIPEAtlasProvider
 
 
 def build_parser() -> argparse.ArgumentParser:
