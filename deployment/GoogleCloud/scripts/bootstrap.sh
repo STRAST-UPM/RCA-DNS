@@ -99,25 +99,39 @@ DOMAINS["southamerica.$BASE_DOMAIN"]="${REGIONS_SOUTHAMERICA[*]}"
 
 
 # Paths constants
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-GOOGLE_CLOUD_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+ROOT_ENV_FILE="$PROJECT_ROOT/.env"
+DEPLOYMENT_DIR="$PROJECT_ROOT/deployment"
+GOOGLE_CLOUD_DIR="$DEPLOYMENT_DIR/GoogleCloud"
 ENV_FILE="$GOOGLE_CLOUD_DIR/.env"
-GOOGLE_CLOUD_DIR_SCRIPTS="$GOOGLE_CLOUD_DIR/scripts"
+SCRIPTS_DIR="$GOOGLE_CLOUD_DIR/scripts"
+
 LOGS_DIR="$GOOGLE_CLOUD_DIR/logs"
 LOG_FILE="$LOGS_DIR/log-$(date +%Y%m%d_%H-%M-%S).log"
 
+STATICS_DIR="$GOOGLE_CLOUD_DIR/statics"
+HELP_TEXT_FILETPATH="$STATICS_DIR/help.txt"
+
 ###############################################################################
 
-if [[ ! -f "$ENV_FILE" ]]; then
-    echo "[ERROR] Missing env file: $ENV_FILE" >&2
-    echo "Copy .env.example to .env and adjust values before running scripts." >&2
+if [[ ! -f "$ROOT_ENV_FILE" && ! -f "$DEPLOYMENT_ENV_FILE" ]]; then
+    echo "[ERROR] Missing env files." >&2
+    echo "Expected at least one of:" >&2
+    echo "  - $ROOT_ENV_FILE" >&2
+    echo "  - $DEPLOYMENT_ENV_FILE" >&2
     exit 1
 fi
 
-# Load environment and export simple vars for subprocesses.
+# Load shared env first, then allow deployment-specific overrides.
 set -a
-# shellcheck source=/dev/null
-source "$ENV_FILE"
+if [[ -f "$ROOT_ENV_FILE" ]]; then
+    # shellcheck source=/dev/null
+    source "$ROOT_ENV_FILE"
+fi
+if [[ -f "$DEPLOYMENT_ENV_FILE" ]]; then
+    # shellcheck source=/dev/null
+    source "$DEPLOYMENT_ENV_FILE"
+fi
 set +a
 
 touch "$LOG_FILE"

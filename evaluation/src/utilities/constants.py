@@ -20,7 +20,11 @@ __PROJECT_ROOT__ = path.dirname(
 ################################################################################
 # Environment values
 ENV_FILEPATH = f"{__PROJECT_ROOT__}/.env"
+EVALUATION_ENV_FILEPATH = f"{__PROJECT_ROOT__}/evaluation/.env"
+
+# Load shared variables first, then allow evaluation-specific overrides.
 load_dotenv(ENV_FILEPATH)
+load_dotenv(EVALUATION_ENV_FILEPATH, override=True)
 
 RIPE_ATLAS_API_KEY = getenv("RIPE_ATLAS_API_KEY", "")
 LOG_LEVEL = getenv("LOG_LEVEL", "INFO")

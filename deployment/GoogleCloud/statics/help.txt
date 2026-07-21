@@ -13,5 +13,7 @@ Available targets:
 	update-gcr-container    Build rcadns image and push it to Google Container Registry.
 
 Notes:
-	- Requires .env file at GoogleCloud/.env
+	- Loads shared vars from project-root .env (if present)
+	- Loads deployment overrides from GoogleCloud/.env (if present)
+	- At least one of those .env files must exist
 	- Logs are stored in GoogleCloud/logs/
