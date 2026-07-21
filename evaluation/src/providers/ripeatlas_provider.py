@@ -44,7 +44,8 @@ class RIPEAtlasProvider:
             http_measurements.append(Http(
                 af=af,
                 description=description,
-                target=target
+                target=target,
+                interval=interval_seconds,
             ))
 
         probes_worldwide = []
@@ -62,7 +63,6 @@ class RIPEAtlasProvider:
             is_oneoff=False,
             start_time=start_time,
             stop_time=stop_time,
-            interval=interval_seconds,
         )
 
         is_success, response = request.create()
