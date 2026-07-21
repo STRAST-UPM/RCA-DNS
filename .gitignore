@@ -16,3 +16,5 @@ venv.bak/
 
 # Editors and IDEs
 .idea/
+
+evaluation/main_playground.py
