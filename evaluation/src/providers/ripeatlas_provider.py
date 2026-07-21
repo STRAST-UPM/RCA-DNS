@@ -78,7 +78,8 @@ class RIPEAtlasProvider:
         measurements_info = {
             "start_time": start_time.isoformat(),
             "stop_time": stop_time.isoformat(),
-            "measurements_ids": measurements_ids
+            "measurements_ids": measurements_ids,
+            "targets": targets
         }
 
         dict_to_json_file(

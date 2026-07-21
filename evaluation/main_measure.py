@@ -9,13 +9,14 @@ from src.utilities.constants import (
 
 BASE_TARGET_DOMAIN="anycastprivacy.org"
 TARGETS_DOMAINS=[
-    f"africa.{BASE_TARGET_DOMAIN}",
-    f"asia.{BASE_TARGET_DOMAIN}",
-    f"australia.{BASE_TARGET_DOMAIN}",
+    f"global.{BASE_TARGET_DOMAIN}",
+    # f"africa.{BASE_TARGET_DOMAIN}",
+    # f"asia.{BASE_TARGET_DOMAIN}",
+    # f"australia.{BASE_TARGET_DOMAIN}",
     f"europe.{BASE_TARGET_DOMAIN}",
-    f"northamerica.{BASE_TARGET_DOMAIN}",
-    f"us.{BASE_TARGET_DOMAIN}",
-    f"southamerica.{BASE_TARGET_DOMAIN}",
+    # f"northamerica.{BASE_TARGET_DOMAIN}",
+    # f"us.{BASE_TARGET_DOMAIN}",
+    # f"southamerica.{BASE_TARGET_DOMAIN}",
 ]
 
 
