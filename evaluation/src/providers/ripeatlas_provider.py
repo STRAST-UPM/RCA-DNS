@@ -1,5 +1,5 @@
 # external imports
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from ripe.atlas.cousteau import (
     Http,
     AtlasSource,
@@ -35,7 +35,7 @@ class RIPEAtlasProvider:
         
     ):
         if start_time is None:
-            start_time = datetime.now(datetime.timezone.utc) + timedelta(seconds=10)
+            start_time = datetime.now(timezone.utc) + timedelta(seconds=10)
 
         stop_time = start_time + timedelta(days=duration_days)
 
@@ -66,6 +66,7 @@ class RIPEAtlasProvider:
         )
 
         is_success, response = request.create()
+        print(response)
         
         if not is_success:
             raise RuntimeError(f"Could not create measurements: {response}")
