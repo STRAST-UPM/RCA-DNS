@@ -1,19 +1,24 @@
 # external imports
 from datetime import datetime, timedelta, timezone
+from os import path, listdir
 from ripe.atlas.cousteau import (
     Http,
     AtlasSource,
-    AtlasCreateRequest
+    AtlasCreateRequest,
+    AtlasResultsRequest,
 )
 # internal imports
 from src.utilities.utils import (
     json_file_to_list,
-    dict_to_json_file
+    json_file_to_dict,
+    dict_to_json_file,
+    get_filepaths_from_folder
 )
 from src.utilities.constants import (
     RIPE_ATLAS_API_KEY,
     CAMPAIGN_NAME,
     CAMPAIGN_FOLDER_PATH,
+    CAMPAIGN_RESULTS_FOLDER_PATH,
     WORLD_COUNTRY_CODES_LIST_FILEPATH
 )
 
@@ -22,6 +27,7 @@ class RIPEAtlasProvider:
     def __init__(self):
         self._api_key = RIPE_ATLAS_API_KEY
 
+    ## Measurements functions
     def http_from_every_country(
         self,
         description: str,
@@ -86,3 +92,39 @@ class RIPEAtlasProvider:
             file_path=f"{CAMPAIGN_FOLDER_PATH}/{measurement_info_filename}.json",
             dict_to_save=measurements_info,
         )
+
+
+    ## Results functions
+    def get_campaign_results(self):
+        measurements_ids = self._get_campaign_measurements_ids()
+        for id in measurements_ids:
+            dict_to_json_file(
+               file_path=f"{CAMPAIGN_RESULTS_FOLDER_PATH}/{id}_results.json",
+               dict_to_save=self._get_measurement_results(id), 
+            )
+
+    def _get_campaign_measurements_ids(self) -> list[int]:
+        measurements_ids = []
+        measurements_filepaths = get_filepaths_from_folder(CAMPAIGN_FOLDER_PATH)
+        for measurement_file in measurements_filepaths:
+            measurements_ids.extend(json_file_to_dict(measurement_file)["measurements_ids"])
+
+        return measurements_ids
+
+    def _get_measurement_results(
+            self,
+            measurement_id: int
+        ) -> list[dict]:
+            request_args = {
+                "msm_id": measurement_id,
+            }
+    
+            request = AtlasResultsRequest(**request_args)
+            is_success, response = request.create()
+    
+            if not is_success:
+                raise RuntimeError(
+                    f"Could not fetch results for measurement {measurement_id}: {response}"
+                )
+    
+            return response

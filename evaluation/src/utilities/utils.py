@@ -1,6 +1,6 @@
 # external imports
 import json
-from os import path, makedirs
+from os import path, makedirs, listdir
 # internal imports
 
 def create_directory_structure(path_to_create: str) -> None:
@@ -41,3 +41,12 @@ def list_to_json_file(list_to_save: list, file_path: str):
     file = open(file_path, "w")
     file.write(json.dumps(list_to_save, indent=4))
     file.close()
+
+def get_filepaths_from_folder(folder_path: str) -> list[str]:
+    filepath_list = []
+    for filename in listdir(folder_path):
+        filepath = path.join(folder_path, filename)
+        if path.isfile(filepath):
+            filepath_list.append(filepath)
+
+    return filepath_list
