@@ -18,6 +18,8 @@ mkdir -p "$destination_folder"
 
 # Copy every .env file in the repository, preserving relative paths.
 rsync -avm \
+	--no-owner \
+	--no-group \
 	--include='*/' \
 	--include='.env' \
 	--exclude='*' \
@@ -25,7 +27,8 @@ rsync -avm \
 
 # Copy all campaign data.
 if [[ -d "$project_root/evaluation/data" ]]; then
-	rsync -av "$project_root/evaluation/data/" "$destination_folder/evaluation/data/"
+	rsync -av --no-owner --no-group \
+		"$project_root/evaluation/data/" "$destination_folder/evaluation/data/"
 fi
 
 echo "Backup completed in: $destination_folder"
