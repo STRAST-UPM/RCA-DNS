@@ -4,6 +4,7 @@ import numpy as np
 # internal imports
 from src.providers.ripeatlas_provider import RIPEAtlasProvider
 from src.modules.analysis_module import AnalysisModule
+from src.modules.graphics_module import GraphicsModule
 from src.utilities.utils import (
     dict_to_json_file
 )
@@ -16,6 +17,7 @@ from src.utilities.constants import (
 if __name__ == "__main__":
     ripe_atlas_provider = RIPEAtlasProvider()
     analysis_module = AnalysisModule()
+    graphics_module = GraphicsModule()
 
     # print("Obtaining measurements results")
     # ripe_atlas_provider.get_campaign_results()
@@ -29,6 +31,7 @@ if __name__ == "__main__":
     report_data = {}
     for objective_domain in objective_domains:
         print(f"Creating report for domain: {objective_domain}")
+
         report_data[objective_domain] = analysis_module.generate_dict_report_for_domain(
             results_df.loc[
                 results_df["rca-dns-domain"] == objective_domain
