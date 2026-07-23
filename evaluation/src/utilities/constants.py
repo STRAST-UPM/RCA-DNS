@@ -41,8 +41,9 @@ __RESOURCES_FOLDER_PATH = f"{__SRC_FOLDER_PATH}/resources"
 
 ## Data paths
 CAMPAIGN_FOLDER_PATH = f"{__DATA_FOLDER_PATH}/{CAMPAIGN_NAME}"
-CAMPAIGN_RESULTS_RESUME = f"{CAMPAIGN_FOLDER_PATH}/results_resume.csv"
+CAMPAIGN_RESULTS_RESUME_FILEPATH = f"{CAMPAIGN_FOLDER_PATH}/results_resume.csv"
 CAMPAIGN_RESULTS_FOLDER_PATH = f"{CAMPAIGN_FOLDER_PATH}/results"
+CAMPAIGN_ANALYSIS_REPORT_FILEPATH = f"{CAMPAIGN_FOLDER_PATH}/analysis_report.json"
 
 ################################################################################
 
@@ -81,3 +82,7 @@ RCA_DNS_IPS={
     "136.68.198.50": f"us.{BASE_DOMAIN}",
     "136.69.55.215": f"southamerica.{BASE_DOMAIN}",
 }
+
+# 100ms is the mark of good time response
+GOOD_RESPONSE_TIME_LIMIT_MS = 100
+MID_RESPONSE_TIME_LIMIT_MS = 150
