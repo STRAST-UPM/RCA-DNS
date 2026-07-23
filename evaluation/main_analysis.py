@@ -79,7 +79,12 @@ if __name__ == "__main__":
     objective_domains = results_df["rca-dns-domain"].unique().tolist()
     report_data = {}
     for objective_domain in objective_domains:
+        print(f"Creating report for domain: {objective_domain}")
         report_data[objective_domain] = {}
+        
+
+        print(f"Finished report for domain: {objective_domain}")
+        
 
     dict_to_json_file(
         report_data,
