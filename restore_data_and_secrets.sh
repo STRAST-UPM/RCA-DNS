@@ -19,10 +19,11 @@ if [[ ! -d "$backup_folder" ]]; then
 	exit 1
 fi
 
-# Restore every .env file found in the backup, preserving relative paths.
+# Restore every .env and .log file found in the backup, preserving relative paths.
 rsync -avm \
 	--include='*/' \
 	--include='.env' \
+	--include='*.log' \
 	--exclude='*' \
 	"$backup_folder/" "$project_root/"
 

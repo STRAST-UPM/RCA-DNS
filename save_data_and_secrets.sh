@@ -16,12 +16,13 @@ project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 mkdir -p "$destination_folder"
 
-# Copy every .env file in the repository, preserving relative paths.
+# Copy every .env and .log file in the repository, preserving relative paths.
 rsync -avm \
 	--no-owner \
 	--no-group \
 	--include='*/' \
 	--include='.env' \
+	--include='*.log' \
 	--exclude='*' \
 	"$project_root/" "$destination_folder/"
 
