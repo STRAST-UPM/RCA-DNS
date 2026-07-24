@@ -28,6 +28,9 @@ def json_file_to_list(file_path: str) -> list:
 
     return json.loads(raw_json)
 
+def json_file_to_set(file_path: str) -> list:
+    return set(json_file_to_list(file_path))
+
 
 def dict_to_json_file(dict_to_save: dict, file_path: str, sort_keys: bool = False):
     create_directory_structure(file_path)

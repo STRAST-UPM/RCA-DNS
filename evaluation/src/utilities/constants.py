@@ -44,6 +44,7 @@ CAMPAIGN_FOLDER_PATH = f"{__DATA_FOLDER_PATH}/{CAMPAIGN_NAME}"
 CAMPAIGN_RESULTS_RESUME_FILEPATH = f"{CAMPAIGN_FOLDER_PATH}/results_resume.csv"
 CAMPAIGN_RESULTS_FOLDER_PATH = f"{CAMPAIGN_FOLDER_PATH}/results"
 CAMPAIGN_ANALYSIS_REPORT_FILEPATH = f"{CAMPAIGN_FOLDER_PATH}/analysis_report.json"
+CAMPAIGN_GRAPHICS_FOLDER_PATH = f"{CAMPAIGN_FOLDER_PATH}/graphics"
 
 ################################################################################
 

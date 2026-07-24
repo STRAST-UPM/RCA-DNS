@@ -12,11 +12,13 @@ class GraphicsModule():
     def __init__(self):
         pass
 
-    def rtts_cds(
+    def generate_rtt_cdf(
+        self,
         rtt_mean: float,
         rtt_median: float,
         rtt_ordered_values: list[int],
         outliers_limit: int,
+        title: str,
         filepath_to_save: str,
     ):
         plt.figure(figsize=(10, 6))
@@ -57,7 +59,7 @@ class GraphicsModule():
         plt.grid(True, linestyle='--', alpha=0.7)
         plt.xlabel(f"RTT in ms")
         plt.ylabel('Cumulative Probability')
-        plt.title(f"CDF of RTT observed in the region-constrained deployment")
+        plt.title(title)
 
         plt.xlim(xmax=outliers_limit)
         plt.ylim(0, 1)
