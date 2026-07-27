@@ -19,11 +19,12 @@ if __name__ == "__main__":
     analysis_module = AnalysisModule()
     graphics_module = GraphicsModule()
 
-    # print("Obtaining measurements results")
-    # ripe_atlas_provider.get_campaign_results()
+    print("Obtaining measurements results")
+    ripe_atlas_provider.get_campaign_results()
 
-    # print("Creating resume from results data")
-    # analysis_module.create_results_resume()
+    print("Creating resume from results data")
+    analysis_module.create_results_resume()
+    analysis_module.add_probes_country_code_to_results_resume()
 
     print("Generating analysis report")
     analysis_module.generate_results_report(

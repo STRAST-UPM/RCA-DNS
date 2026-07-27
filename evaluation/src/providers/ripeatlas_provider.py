@@ -29,6 +29,7 @@ class RIPEAtlasProvider:
         self._api_key = RIPE_ATLAS_API_KEY
 
     def get_probes_info(self, probes_ids: list[int]) -> list[dict]:
+        print(f"Getting information of {len(probes_ids)} probes")
         """Fetch metadata for a list of RIPE Atlas probe IDs."""
         if not probes_ids:
             return []
