@@ -117,7 +117,7 @@ class AnalysisModule:
 
     def _save_campaign_probes_info(self):
         print("Saving information from probes used in campaign")
-        probe_ids = probe_ids = set(pd.read_csv(CAMPAIGN_RESULTS_RESUME_FILEPATH)["probe_id"].tolist())
+        probe_ids = probe_ids = pd.read_csv(CAMPAIGN_RESULTS_RESUME_FILEPATH)["probe_id"].unique().tolist()
         if not probe_ids:
             raise RuntimeError("No probe IDs were found in campaign results")
 
@@ -157,7 +157,7 @@ class AnalysisModule:
                 region_report = self._get_report_dict(
                     results_df.loc[
                         results_df["rca-dns-domain"] == objective_domain,
-                        # results_df["origin_country_code"].isin(region_countries_set)
+                        results_df["origin_country_code"].isin(region_countries_set)
                     ].copy()
                 )
                 region_report["countries_codes"] = list(region_countries_set)
@@ -168,7 +168,7 @@ class AnalysisModule:
                 region_report = self._get_report_dict(
                     results_df.loc[
                         results_df["rca-dns-domain"] == objective_domain,
-                        # results_df["origin_country_code"].isin(non_region_countries_set)
+                        results_df["origin_country_code"].isin(non_region_countries_set)
                     ].copy()
                 )
                 region_report["countries_codes"] = list(non_region_countries_set)
@@ -260,7 +260,7 @@ class AnalysisModule:
             for countries_set, title, filename in regions:
                 domain_countries_results_df = results_df.loc[
                     results_df["rca-dns-domain"] == objective_domain,
-                    # results_df["origin_country_code"].isin(countries_set)
+                    results_df["origin_country_code"].isin(countries_set)
                 ].copy()
 
                 rtt_values_ordered = domain_countries_results_df.loc[

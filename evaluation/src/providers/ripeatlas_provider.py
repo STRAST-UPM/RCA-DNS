@@ -20,6 +20,7 @@ from src.utilities.constants import (
     CAMPAIGN_NAME,
     CAMPAIGN_FOLDER_PATH,
     CAMPAIGN_RESULTS_FOLDER_PATH,
+    CAMPAIGN_ORDERED_MEASUREMENTS_INFO_SUFIX,
     WORLD_COUNTRY_CODES_LIST_FILEPATH
 )
 
@@ -118,19 +119,37 @@ class RIPEAtlasProvider:
 
 
     ## Results functions
-    def get_campaign_results(self):
-        measurements_ids = self._get_campaign_measurements_ids()
+    def get_campaign_results(
+            self, 
+            measurements_filename_filter: str = CAMPAIGN_ORDERED_MEASUREMENTS_INFO_SUFIX
+        ):
+        measurements_ids = self._get_campaign_measurements_ids(
+            filepath_contains=measurements_filename_filter
+        )
         for id in measurements_ids:
+            print(f"Getting results of measurement {id}")
             dict_to_json_file(
                file_path=f"{CAMPAIGN_RESULTS_FOLDER_PATH}/{id}_results.json",
                dict_to_save=self._get_measurement_results(id), 
             )
 
-    def _get_campaign_measurements_ids(self) -> list[int]:
+    def _get_campaign_measurements_ids(
+            self, 
+            filepath_contains: str = CAMPAIGN_ORDERED_MEASUREMENTS_INFO_SUFIX
+        ) -> list[int]:
         measurements_ids = []
         measurements_filepaths = get_filepaths_from_folder(CAMPAIGN_FOLDER_PATH)
+
         for measurement_file in measurements_filepaths:
-            measurements_ids.extend(json_file_to_dict(measurement_file)["measurements_ids"])
+            if filepath_contains and filepath_contains not in measurement_file:
+                continue
+
+            measurement_ids_in_file = json_file_to_dict(measurement_file).get("measurements_ids", [])
+            measurements_ids.extend(
+                measurement_id
+                for measurement_id in measurement_ids_in_file
+                if isinstance(measurement_id, int)
+            )
 
         return measurements_ids
 

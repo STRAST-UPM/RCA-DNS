@@ -15,21 +15,28 @@ from src.utilities.constants import (
 
 
 if __name__ == "__main__":
+    get_results = False
+    build_data_for_analysis = True
+    generate_analysis_report = True
+
     ripe_atlas_provider = RIPEAtlasProvider()
     analysis_module = AnalysisModule()
     graphics_module = GraphicsModule()
 
-    print("Obtaining measurements results")
-    ripe_atlas_provider.get_campaign_results()
+    if get_results:
+        print("Obtaining measurements results")
+        ripe_atlas_provider.get_campaign_results()
 
-    print("Creating resume from results data")
-    analysis_module.create_results_resume()
-    analysis_module.add_probes_country_code_to_results_resume()
+    if build_data_for_analysis:
+        print("Creating resume from results data")
+        analysis_module.create_results_resume()
+        analysis_module.add_probes_country_code_to_results_resume()
 
-    print("Generating analysis report")
-    analysis_module.generate_results_report(
-        results_resume_filepath=CAMPAIGN_RESULTS_RESUME_FILEPATH
-    )
-    analysis_module.generate_cdfs_for_regions_in_domains(
-        results_resume_filepath=CAMPAIGN_RESULTS_RESUME_FILEPATH
-    )
+    if generate_analysis_report:
+        print("Generating analysis report")
+        analysis_module.generate_results_report(
+            results_resume_filepath=CAMPAIGN_RESULTS_RESUME_FILEPATH
+        )
+        analysis_module.generate_cdfs_for_regions_in_domains(
+            results_resume_filepath=CAMPAIGN_RESULTS_RESUME_FILEPATH
+        )
