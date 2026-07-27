@@ -43,13 +43,10 @@ class RIPEAtlasProvider:
             "id__in": ",".join(str(probe_id) for probe_id in valid_probe_ids),
         }
 
-        request = ProbeRequest(**request_args)
-        is_success, response = request.create()
-
-        if not is_success:
-            raise RuntimeError(f"Could not fetch probe info: {response}")
-
-        return response
+        try:
+            return list(ProbeRequest(**request_args))
+        except Exception as error:
+            raise RuntimeError(f"Could not fetch probe info: {error}") from error
 
     ## Measurements functions
     def http_from_every_country(
