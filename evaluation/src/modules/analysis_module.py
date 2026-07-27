@@ -2,11 +2,13 @@
 import pandas as pd
 import numpy as np
 # internal imports
+from src.providers.ripeatlas_provider import RIPEAtlasProvider
 from src.modules.graphics_module import GraphicsModule
 from src.utilities.utils import (
     json_file_to_set,
     json_file_to_list,
     dict_to_json_file,
+    list_to_json_file,
     get_filepaths_from_folder,
 )
 from src.utilities.constants import (
@@ -16,9 +18,11 @@ from src.utilities.constants import (
     ASIA_COUNTRY_CODES_LIST_FILEPATH,
     EUROPE_COUNTRY_CODES_LIST_FILEPATH,
     OCEANIA_COUNTRY_CODES_LIST_FILEPATH,
-    CAMPAIGN_RESULTS_FOLDER_PATH,
+    CAMPAIGN_FOLDER_PATH,
     CAMPAIGN_RESULTS_RESUME_FILEPATH,
     CAMPAIGN_ANALYSIS_REPORT_FILEPATH,
+    CAMPAIGN_PROBES_INFO_FILEPATH,
+    CAMPAIGN_RESULTS_FOLDER_PATH,
     CAMPAIGN_GRAPHICS_FOLDER_PATH,
     RCA_DNS_IPS,
     BASE_DOMAIN,
@@ -42,23 +46,23 @@ class AnalysisModule:
 
     # Analysis functions
     def create_results_resume(self):
-                results_filepaths = get_filepaths_from_folder(CAMPAIGN_RESULTS_FOLDER_PATH)
-                results_df = pd.DataFrame(
-                    columns=[
-                        "measurement_id", "probe_id", "timestamp", 
-                        "rca-dns-domain", "uri", "source_address", "destination_address", 
-                        "rtt", "response_code", "headers_size", "body_size"
-                    ]
-                )
-        
-                for result_file in results_filepaths:
-                    print(f"Extracting data from file: {result_file}")
-                    results_list = json_file_to_list(result_file)
-                    for result in results_list:
-                        result_dict = self.extract_data_from_result(result)
-                        results_df.loc[len(results_df)] = result_dict
-        
-                results_df.to_csv(CAMPAIGN_RESULTS_RESUME_FILEPATH, index=False)
+        results_filepaths = get_filepaths_from_folder(CAMPAIGN_RESULTS_FOLDER_PATH)
+        results_df = pd.DataFrame(
+            columns=[
+                "measurement_id", "probe_id", "timestamp", 
+                "rca-dns-domain", "uri", "source_address", "destination_address", 
+                "rtt", "response_code", "headers_size", "body_size"
+            ]
+        )
+
+        for result_file in results_filepaths:
+            print(f"Extracting data from file: {result_file}")
+            results_list = json_file_to_list(result_file)
+            for result in results_list:
+                result_dict = self.extract_data_from_result(result)
+                results_df.loc[len(results_df)] = result_dict
+
+        results_df.to_csv(CAMPAIGN_RESULTS_RESUME_FILEPATH, index=False)
 
     def extract_data_from_result(self, result: dict):
         if "err" in result["result"][0].keys():
@@ -88,6 +92,49 @@ class AnalysisModule:
             "body_size": body_size,
         }
 
+    def add_probes_country_code_to_results_resume(self):
+        self._save_campaign_probes_info()
+
+        print("Addind to results the origin country code of the communication")
+        results_df = pd.read_csv(CAMPAIGN_RESULTS_RESUME_FILEPATH)
+        probes_info_list = json_file_to_list(CAMPAIGN_PROBES_INFO_FILEPATH)
+
+        probe_id_to_country_code = {}
+        for probe_info in probes_info_list:
+            probe_id = probe_info.get("id")
+            country_code = probe_info.get("country_code")
+
+            if isinstance(probe_id, int) and isinstance(country_code, str):
+                probe_id_to_country_code[probe_id] = country_code
+
+        origin_country_codes = results_df["probe_id"].map(probe_id_to_country_code).fillna("")
+
+        probe_id_column_position = results_df.columns.get_loc("probe_id")
+        results_df.insert(probe_id_column_position + 1, "origin_country_code", origin_country_codes)
+
+        results_df.to_csv(CAMPAIGN_RESULTS_RESUME_FILEPATH, index=False)
+        print("Origin country code information addded")
+
+    def _save_campaign_probes_info(self):
+        print("Saving information from probes used in campaign")
+        probe_ids = probe_ids = set(pd.read_csv(CAMPAIGN_RESULTS_RESUME_FILEPATH)["probe_id"].tolist())
+        if not probe_ids:
+            raise RuntimeError("No probe IDs were found in campaign results")
+
+        ripe_atlas_provider = RIPEAtlasProvider()
+        probes_info = []
+        chunk_size = 100
+
+        for i in range(0, len(probe_ids), chunk_size):
+            probes_chunk = probe_ids[i:i + chunk_size]
+            probes_info.extend(ripe_atlas_provider.get_probes_info(probes_chunk))
+
+        list_to_json_file(
+            list_to_save=probes_info,
+            file_path=CAMPAIGN_PROBES_INFO_FILEPATH,
+        )
+        print("Probes information saved")
+    
     def generate_results_report(
         self,
         results_resume_filepath: str = CAMPAIGN_RESULTS_RESUME_FILEPATH,
