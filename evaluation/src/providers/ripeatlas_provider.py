@@ -6,6 +6,7 @@ from ripe.atlas.cousteau import (
     AtlasSource,
     AtlasCreateRequest,
     AtlasResultsRequest,
+    ProbeRequest,
 )
 # internal imports
 from src.utilities.utils import (
@@ -26,6 +27,27 @@ from src.utilities.constants import (
 class RIPEAtlasProvider:
     def __init__(self):
         self._api_key = RIPE_ATLAS_API_KEY
+
+    def get_probes_info(self, probes_ids: list[int]) -> list[dict]:
+        """Fetch metadata for a list of RIPE Atlas probe IDs."""
+        if not probes_ids:
+            return []
+
+        valid_probe_ids = [probe_id for probe_id in probes_ids if isinstance(probe_id, int)]
+        if not valid_probe_ids:
+            raise ValueError("The probes_ids list must contain at least one integer probe ID")
+
+        request_args = {
+            "id__in": ",".join(str(probe_id) for probe_id in valid_probe_ids),
+        }
+
+        request = ProbeRequest(**request_args)
+        is_success, response = request.create()
+
+        if not is_success:
+            raise RuntimeError(f"Could not fetch probe info: {response}")
+
+        return response
 
     ## Measurements functions
     def http_from_every_country(
