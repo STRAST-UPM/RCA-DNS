@@ -15,8 +15,8 @@ from src.utilities.constants import (
 
 
 if __name__ == "__main__":
-    get_results = True
-    build_data_for_analysis = True
+    get_results = False
+    build_data_for_analysis = False
     generate_analysis_report = True
 
     ripe_atlas_provider = RIPEAtlasProvider()
