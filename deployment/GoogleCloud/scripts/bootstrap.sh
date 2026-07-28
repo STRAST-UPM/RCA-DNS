@@ -84,6 +84,47 @@ REGIONS=(
     # "${REGIONS_MIDDLEEAST[@]}"
 )
 
+# Paths constants
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+ROOT_ENV_FILE="$PROJECT_ROOT/.env"
+DEPLOYMENT_DIR="$PROJECT_ROOT/deployment"
+GOOGLE_CLOUD_DIR="$DEPLOYMENT_DIR/GoogleCloud"
+GOOGLE_CLOUD_DEPLOUYMENT_ENV_FILE="$GOOGLE_CLOUD_DIR/.env"
+SCRIPTS_DIR="$GOOGLE_CLOUD_DIR/scripts"
+
+LOGS_DIR="$GOOGLE_CLOUD_DIR/logs"
+LOG_FILE="$LOGS_DIR/log-$(date +%Y%m%d_%H-%M-%S).log"
+
+STATICS_DIR="$GOOGLE_CLOUD_DIR/statics"
+HELP_TEXT_FILETPATH="$STATICS_DIR/help.txt"
+
+###############################################################################
+
+if [[ ! -f "$ROOT_ENV_FILE" && ! -f "$GOOGLE_CLOUD_DEPLOUYMENT_ENV_FILE" ]]; then
+    echo "[ERROR] Missing env files." >&2
+    echo "Expected at least one of:" >&2
+    echo "  - $ROOT_ENV_FILE" >&2
+    echo "  - $GOOGLE_CLOUD_DEPLOUYMENT_ENV_FILE" >&2
+    exit 1
+fi
+
+# Load shared env first, then allow deployment-specific overrides.
+set -a
+if [[ -f "$ROOT_ENV_FILE" ]]; then
+    # shellcheck source=/dev/null
+    source "$ROOT_ENV_FILE"
+fi
+if [[ -f "$GOOGLE_CLOUD_DEPLOUYMENT_ENV_FILE" ]]; then
+    # shellcheck source=/dev/null
+    source "$GOOGLE_CLOUD_DEPLOUYMENT_ENV_FILE"
+fi
+set +a
+
+touch "$LOG_FILE"
+
+# Capture all output from this shell (including external tools) to screen and log.
+exec > >(tee -a "$LOG_FILE") 2>&1
+
 # shellcheck disable=SC2034
 declare -gA DOMAINS
 
@@ -97,55 +138,11 @@ DOMAINS["northamerica.$BASE_DOMAIN"]="${REGIONS_NORTHAMERICA[*]}"
 DOMAINS["us.$BASE_DOMAIN"]="${REGIONS_US[*]}"
 DOMAINS["southamerica.$BASE_DOMAIN"]="${REGIONS_SOUTHAMERICA[*]}"
 
-
-# Paths constants
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-ROOT_ENV_FILE="$PROJECT_ROOT/.env"
-DEPLOYMENT_DIR="$PROJECT_ROOT/deployment"
-GOOGLE_CLOUD_DIR="$DEPLOYMENT_DIR/GoogleCloud"
-ENV_FILE="$GOOGLE_CLOUD_DIR/.env"
-SCRIPTS_DIR="$GOOGLE_CLOUD_DIR/scripts"
-
-LOGS_DIR="$GOOGLE_CLOUD_DIR/logs"
-LOG_FILE="$LOGS_DIR/log-$(date +%Y%m%d_%H-%M-%S).log"
-
-STATICS_DIR="$GOOGLE_CLOUD_DIR/statics"
-HELP_TEXT_FILETPATH="$STATICS_DIR/help.txt"
-
-###############################################################################
-
-if [[ ! -f "$ROOT_ENV_FILE" && ! -f "$DEPLOYMENT_ENV_FILE" ]]; then
-    echo "[ERROR] Missing env files." >&2
-    echo "Expected at least one of:" >&2
-    echo "  - $ROOT_ENV_FILE" >&2
-    echo "  - $DEPLOYMENT_ENV_FILE" >&2
-    exit 1
-fi
-
-# Load shared env first, then allow deployment-specific overrides.
-set -a
-if [[ -f "$ROOT_ENV_FILE" ]]; then
-    # shellcheck source=/dev/null
-    source "$ROOT_ENV_FILE"
-fi
-if [[ -f "$DEPLOYMENT_ENV_FILE" ]]; then
-    # shellcheck source=/dev/null
-    source "$DEPLOYMENT_ENV_FILE"
-fi
-set +a
-
-touch "$LOG_FILE"
-
-# Capture all output from this shell (including external tools) to screen and log.
-exec > >(tee -a "$LOG_FILE") 2>&1
-
-
-
 bootstrap_load_scripts() {
     local file
 
     while IFS= read -r file; do
         # shellcheck source=/dev/null
         source "$file"
-    done < <(find "$SCRIPT_DIR" -type f -name "*.sh" ! -name "bootstrap.sh" -print | sort)
+    done < <(find "$SCRIPTS_DIR" -type f -name "*.sh" ! -name "bootstrap.sh" -print | sort)
 }
