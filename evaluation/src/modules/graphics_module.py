@@ -6,6 +6,9 @@ from src.utilities.constants import (
     GOOD_RESPONSE_TIME_LIMIT_MS,
     MID_RESPONSE_TIME_LIMIT_MS
 )
+from src.utilities.utils import (
+    create_directory_structure
+)
 
 
 class GraphicsModule():
@@ -69,5 +72,6 @@ class GraphicsModule():
 
         plt.legend()
         plt.tight_layout()
+        create_directory_structure(filepath_to_save)
         plt.savefig(filepath_to_save)
         plt.close()

@@ -15,7 +15,7 @@ from src.utilities.constants import (
 
 
 if __name__ == "__main__":
-    get_results = False
+    get_results = True
     build_data_for_analysis = True
     generate_analysis_report = True
 
