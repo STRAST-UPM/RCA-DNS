@@ -1,6 +1,7 @@
 # external imports
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 # internal imports
 from src.utilities.constants import (
     GOOD_RESPONSE_TIME_LIMIT_MS,
@@ -18,12 +19,14 @@ class GraphicsModule():
     def generate_rtt_cdf(
         self,
         rtt_mean: float,
-        rtt_median: float,
-        rtt_ordered_values: list[int],
+        rtt_ordered_values: pd.Series,
         outliers_limit: int,
         title: str,
         filepath_to_save: str,
     ):
+        if rtt_ordered_values.empty:
+            raise ValueError("rtt_ordered_values cannot be empty")
+
         plt.figure(figsize=(10, 6))
 
         cumulative_probabilities = np.arange(1,
@@ -43,7 +46,7 @@ class GraphicsModule():
             rtt_ordered_values,
             cumulative_probabilities,
             1,
-            where=( (rtt_ordered_values > GOOD_RESPONSE_TIME_LIMIT_MS) & (rtt_ordered_values <= MID_RESPONSE_TIME_LIMIT_MS) ),
+            where=((rtt_ordered_values > GOOD_RESPONSE_TIME_LIMIT_MS) & (rtt_ordered_values <= MID_RESPONSE_TIME_LIMIT_MS)),
             interpolate=True,
             color='yellow',
             alpha=0.18,
@@ -64,7 +67,10 @@ class GraphicsModule():
         plt.ylabel('Cumulative Probability')
         plt.title(title)
 
-        plt.xlim(xmax=outliers_limit)
+        plt.xlim(
+            xmin=float(rtt_ordered_values.iloc[0]),
+            xmax=float(outliers_limit)
+        )
         plt.ylim(0, 1)
 
         # Plot vertical lines for median and mean

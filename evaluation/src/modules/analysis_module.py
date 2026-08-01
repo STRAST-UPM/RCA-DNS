@@ -33,6 +33,7 @@ from src.utilities.constants import (
 
 class AnalysisModule:
     def __init__(self):
+        self._global_domain = f"global.{BASE_DOMAIN}"
         self._domains_to_country_codes = {
             f"africa.{BASE_DOMAIN}": json_file_to_set(AFRICA_COUNTRY_CODES_LIST_FILEPATH),
             f"asia.{BASE_DOMAIN}": json_file_to_set(ASIA_COUNTRY_CODES_LIST_FILEPATH),
@@ -154,28 +155,23 @@ class AnalysisModule:
                 ].copy()
             )
 
-            if objective_domain in self._domains_to_country_codes.keys():            
-                # Report or metrics from countries inside the region
+            if objective_domain in self._domains_to_country_codes.keys():
                 region_countries_set = self._domains_to_country_codes[objective_domain]
-                region_report = self._get_report_dict(
-                    results_df.loc[
-                        (results_df["rca-dns-domain"] == objective_domain)
-                        & (results_df["origin_country_code"].isin(region_countries_set))
-                    ].copy()
-                )
-                region_report["countries_codes"] = list(region_countries_set)
-                report_data[objective_domain]["inside_region_countries_report"] = region_report
-
-                # Report or metrics from countries outside the region
                 non_region_countries_set = self._world_countries_codes_list - region_countries_set
-                region_report = self._get_report_dict(
-                    results_df.loc[
-                        (results_df["rca-dns-domain"] == objective_domain)
-                        & (results_df["origin_country_code"].isin(non_region_countries_set))
-                    ].copy()
-                )
-                region_report["countries_codes"] = list(non_region_countries_set)
-                report_data[objective_domain]["outside_region_countries_report"] = region_report
+
+                for domain, country_codes, key_string in [
+                    (objective_domain, region_countries_set, "inside_region_countries_report"),
+                    (self._global_domain, region_countries_set, "inside_region_countries_to_global_report"),
+                    (objective_domain, non_region_countries_set, "outside_region_countries_report")
+                ]:
+                    region_report = self._get_report_dict(
+                        results_df.loc[
+                            (results_df["rca-dns-domain"] == domain)
+                            & (results_df["origin_country_code"].isin(country_codes))
+                        ].copy()
+                    )
+                    region_report["countries_codes"] = list(country_codes)
+                    report_data[objective_domain][key_string] = region_report
 
             print(f"Finished report for domain: {objective_domain}")
 
@@ -239,47 +235,52 @@ class AnalysisModule:
         objective_domains = results_df["rca-dns-domain"].unique().tolist()
 
         graphics = GraphicsModule()
+        cdf_params_list = []
+        print("Creating list of params for CDFs cretion")
         for objective_domain in objective_domains:
-            print(f"Creating CDFs for domain: {objective_domain}")
-
             if objective_domain in self._domains_to_country_codes.keys():
+                region_name = objective_domain.split(".")[0]
                 region_countries_set = self._domains_to_country_codes[objective_domain]
-                non_region_countries_set = self._world_countries_codes_list - region_countries_set
-                regions = [
-                    (region_countries_set,
-                    "CDF of RTT observed in the region-constrained countries deployment",
-                    f"{objective_domain}_cdf_rtts_inside_region_contrained"),
-                    (non_region_countries_set,
-                    "CDF of RTT observed outside region-constrained countries deployment",
-                    f"{objective_domain}_cdf_rtts_outside_region_contrained")
-                ]
-            else:
-                regions = [
-                    (self._world_countries_codes_list,
-                    "CDF of RTT observed in the global region",
-                    f"{objective_domain}_cdf_rtts"),
-                ]
-
-            for countries_set, title, filename in regions:
-                domain_countries_results_df = results_df.loc[
-                    (results_df["rca-dns-domain"] == objective_domain)
-                    & (results_df["origin_country_code"].isin(countries_set))
-                ].copy()
-
-                rtt_values_ordered = domain_countries_results_df.loc[
-                    domain_countries_results_df["rtt"] != -1, 
-                    "rtt"
-                ].sort_values()
-                rtt_mean = np.mean(rtt_values_ordered)
-                rtt_median = np.median(rtt_values_ordered)
-
-                graphics.generate_rtt_cdf(
-                    rtt_mean=rtt_mean,
-                    rtt_median=rtt_median,
-                    rtt_ordered_values=rtt_values_ordered,
-                    outliers_limit=rtt_mean*5,
-                    title=f"{title}",
-                    filepath_to_save=f"{CAMPAIGN_GRAPHICS_FOLDER_PATH}/{filename}.png",
+                cdf_params_list.append(
+                    (objective_domain,
+                    region_countries_set,
+                    f"RTTs CDF observed from {region_name} to deployment in domain {objective_domain}",
+                    f"cdf_rtts_from_{region_name}_to_{objective_domain}")
                 )
+                cdf_params_list.append(
+                    (self._global_domain,
+                    region_countries_set,
+                    f"RTTs CDF observed from {region_name} to deployment in domain {self._global_domain}",
+                    f"cdf_rtts_from_{region_name}_to_{self._global_domain}")
+                )
+            else:
+                cdf_params_list.append(
+                    (self._global_domain,
+                    self._world_countries_codes_list,
+                    "RTTs CDF observed in global region",
+                    f"cdf_rtts_to_{self._global_domain}")
+                )
+        print("List of params for CDFs cretion ready")
 
-            print(f"Finished CDFs for domain: {objective_domain}")
+        for domain, countries_set, title, filename in cdf_params_list:
+            print(f"Creating CDF: {title}")
+            domain_countries_results_df = results_df.loc[
+                (results_df["rca-dns-domain"] == domain)
+                & (results_df["origin_country_code"].isin(countries_set))
+            ].copy()
+
+            rtt_values_ordered = domain_countries_results_df.loc[
+                domain_countries_results_df["rtt"] != -1, 
+                "rtt"
+            ].sort_values()
+            rtt_mean = np.mean(rtt_values_ordered)
+
+            graphics.generate_rtt_cdf(
+                rtt_mean=rtt_mean,
+                rtt_ordered_values=rtt_values_ordered,
+                outliers_limit=rtt_mean*5,
+                title=f"{title}",
+                filepath_to_save=f"{CAMPAIGN_GRAPHICS_FOLDER_PATH}/{filename}.png",
+            )
+
+            print(f"Finished CDFs: {title}")
