@@ -65,7 +65,7 @@ class GraphicsModule():
         plt.grid(True, linestyle='--', alpha=0.7)
         plt.xlabel(f"RTT in ms")
         plt.ylabel('Cumulative Probability')
-        plt.title(title)
+        # plt.title(title)
 
         plt.xlim(
             xmin=float(rtt_ordered_values.iloc[0]),
