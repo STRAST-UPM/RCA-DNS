@@ -17,7 +17,7 @@ from src.utilities.constants import (
     AMERICA_COUNTRY_CODES_LIST_FILEPATH,
     ASIA_COUNTRY_CODES_LIST_FILEPATH,
     EUROPE_COUNTRY_CODES_LIST_FILEPATH,
-    EEA_UK_CH_COUNTRY_CODES_LIST_FILEPATH,
+    EEA_EXTENDED_COUNTRY_CODES_LIST_FILEPATH,
     OCEANIA_COUNTRY_CODES_LIST_FILEPATH,
     CAMPAIGN_FOLDER_PATH,
     CAMPAIGN_RESULTS_RESUME_FILEPATH,
@@ -163,9 +163,10 @@ class AnalysisModule:
 
                 if objective_domain == f"europe.{BASE_DOMAIN}":
                     report_params_list.append(
-                        (objective_domain, json_file_to_list(EEA_UK_CH_COUNTRY_CODES_LIST_FILEPATH), "report_from_eea_plus_uk_ch")
+                        (objective_domain, json_file_to_list(EEA_EXTENDED_COUNTRY_CODES_LIST_FILEPATH), "report_from_eea_extended")
                     )
 
+                report_data[objective_domain] = {}
                 for domain, country_codes, key_string in report_params_list:
                     if not country_codes:
                         region_report = self._get_report_dict(
@@ -183,15 +184,14 @@ class AnalysisModule:
 
                     region_report["countries_codes"] = list(country_codes)
 
-                    report_data[objective_domain] = {}
                     report_data[objective_domain][key_string] = region_report
-                else: 
-                    report_data[objective_domain] = {}
-                    report_data[objective_domain]["general"] = self._get_report_dict(
-                        results_df.loc[
-                            results_df["rca-dns-domain"] == objective_domain
-                        ].copy()
-                    )
+            else: 
+                report_data[objective_domain] = {}
+                report_data[objective_domain]["general_report"] = self._get_report_dict(
+                    results_df.loc[
+                        results_df["rca-dns-domain"] == objective_domain
+                    ].copy()
+                )
 
             print(f"Finished report for domain: {objective_domain}")
 
@@ -273,6 +273,17 @@ class AnalysisModule:
                     f"RTTs CDF observed from {region_name} to deployment in domain {self._global_domain}",
                     f"cdf_rtts_from_{region_name}_to_{self._global_domain}")
                 )
+
+                if objective_domain == f"europe.{BASE_DOMAIN}":
+                    region_name = "eea_extended"
+                    region_countries_set = json_file_to_list(EEA_EXTENDED_COUNTRY_CODES_LIST_FILEPATH)
+                    cdf_params_list.append(
+                        (objective_domain,
+                        region_countries_set,
+                        f"RTTs CDF observed from {region_name} to deployment in domain {objective_domain}",
+                        f"cdf_rtts_from_{region_name}_to_{objective_domain}")
+                    )
+
             else:
                 cdf_params_list.append(
                     (self._global_domain,
