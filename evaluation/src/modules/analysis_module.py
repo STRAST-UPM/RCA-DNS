@@ -17,6 +17,7 @@ from src.utilities.constants import (
     AMERICA_COUNTRY_CODES_LIST_FILEPATH,
     ASIA_COUNTRY_CODES_LIST_FILEPATH,
     EUROPE_COUNTRY_CODES_LIST_FILEPATH,
+    EEA_UK_CH_COUNTRY_CODES_LIST_FILEPATH,
     OCEANIA_COUNTRY_CODES_LIST_FILEPATH,
     CAMPAIGN_FOLDER_PATH,
     CAMPAIGN_RESULTS_RESUME_FILEPATH,
@@ -148,30 +149,49 @@ class AnalysisModule:
         report_data = {}
         for objective_domain in objective_domains:
             print(f"Creating report for domain: {objective_domain}")
-    
-            report_data[objective_domain] = self._get_report_dict(
-                results_df.loc[
-                    results_df["rca-dns-domain"] == objective_domain
-                ].copy()
-            )
-
-            if objective_domain in self._domains_to_country_codes.keys():
+            
+            if objective_domain in set(self._domains_to_country_codes.keys()):
                 region_countries_set = self._domains_to_country_codes[objective_domain]
                 non_region_countries_set = self._world_countries_codes_list - region_countries_set
 
-                for domain, country_codes, key_string in [
-                    (objective_domain, region_countries_set, "inside_region_countries_report"),
-                    (self._global_domain, region_countries_set, "inside_region_countries_to_global_report"),
-                    (objective_domain, non_region_countries_set, "outside_region_countries_report")
-                ]:
-                    region_report = self._get_report_dict(
+                report_params_list = [
+                    (objective_domain, [], "general_report"),
+                    (objective_domain, region_countries_set, "report_from_inside_region_countries"),
+                    (self._global_domain, region_countries_set, "report_from_inside_region_countries_to_global"),
+                    (objective_domain, non_region_countries_set, "report_from_outside_region_countries")
+                ]
+
+                if objective_domain == f"europe.{BASE_DOMAIN}":
+                    report_params_list.append(
+                        (objective_domain, json_file_to_list(EEA_UK_CH_COUNTRY_CODES_LIST_FILEPATH), "report_from_eea_plus_uk_ch")
+                    )
+
+                for domain, country_codes, key_string in report_params_list:
+                    if not country_codes:
+                        region_report = self._get_report_dict(
+                            results_df.loc[
+                                (results_df["rca-dns-domain"] == domain)
+                            ].copy()
+                        )
+                    else: 
+                        region_report = self._get_report_dict(
+                            results_df.loc[
+                                (results_df["rca-dns-domain"] == domain)
+                                & (results_df["origin_country_code"].isin(country_codes))
+                            ].copy()
+                        )
+
+                    region_report["countries_codes"] = list(country_codes)
+
+                    report_data[objective_domain] = {}
+                    report_data[objective_domain][key_string] = region_report
+                else: 
+                    report_data[objective_domain] = {}
+                    report_data[objective_domain]["general"] = self._get_report_dict(
                         results_df.loc[
-                            (results_df["rca-dns-domain"] == domain)
-                            & (results_df["origin_country_code"].isin(country_codes))
+                            results_df["rca-dns-domain"] == objective_domain
                         ].copy()
                     )
-                    region_report["countries_codes"] = list(country_codes)
-                    report_data[objective_domain][key_string] = region_report
 
             print(f"Finished report for domain: {objective_domain}")
 
