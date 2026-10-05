@@ -2,3 +2,5 @@ ripe-atlas-cousteau
 dotenv
 pandas
 matplotlib
+plotly
+kaleido
