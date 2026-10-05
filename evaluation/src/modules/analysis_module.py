@@ -15,6 +15,8 @@ from src.utilities.constants import (
     WORLD_COUNTRY_CODES_LIST_FILEPATH,
     AFRICA_COUNTRY_CODES_LIST_FILEPATH,
     AMERICA_COUNTRY_CODES_LIST_FILEPATH,
+    NORTHAMERICA_COUNTRY_CODES_LIST_FILEPATH,
+    SOUTHAMERICA_COUNTRY_CODES_LIST_FILEPATH,
     ASIA_COUNTRY_CODES_LIST_FILEPATH,
     EEA_EXTENDED_COUNTRY_CODES_LIST_FILEPATH,
     OCEANIA_COUNTRY_CODES_LIST_FILEPATH,
@@ -38,9 +40,9 @@ class AnalysisModule:
             f"asia.{BASE_DOMAIN}": json_file_to_set(ASIA_COUNTRY_CODES_LIST_FILEPATH),
             f"australia.{BASE_DOMAIN}": json_file_to_set(OCEANIA_COUNTRY_CODES_LIST_FILEPATH),
             f"eea-extended.{BASE_DOMAIN}": json_file_to_set(EEA_EXTENDED_COUNTRY_CODES_LIST_FILEPATH),
-            f"northamerica.{BASE_DOMAIN}": {"MX", "CA"},
+            f"northamerica.{BASE_DOMAIN}": json_file_to_set(NORTHAMERICA_COUNTRY_CODES_LIST_FILEPATH),
             f"us.{BASE_DOMAIN}": {"US"},
-            f"southamerica.{BASE_DOMAIN}": json_file_to_set(AMERICA_COUNTRY_CODES_LIST_FILEPATH) - {"MX", "CA", "US"},
+            f"southamerica.{BASE_DOMAIN}": json_file_to_set(SOUTHAMERICA_COUNTRY_CODES_LIST_FILEPATH),
         }
         self._world_countries_codes_list = json_file_to_set(WORLD_COUNTRY_CODES_LIST_FILEPATH)
 
@@ -188,6 +190,35 @@ class AnalysisModule:
 
             print(f"Finished report for domain: {objective_domain}")
 
+        # General statistics from the experiment
+        general_statistics = {}
+
+        # Probes experiment info
+        probes_info_list = json_file_to_list(CAMPAIGN_PROBES_INFO_FILEPATH)
+        probes_ids = set()
+        for probe_info in probes_info_list:
+            probes_ids.add(probe_info.get("id"))
+        general_statistics["number_or_probes_used"] = len(probes_ids)
+
+        # Number of measurements
+        total_measurements_count = int(results_df["rtt"].count())
+        valid_measurements_count = len(results_df.loc[
+            results_df["rtt"] != -1, 
+            "rtt"
+        ].sort_values())
+        general_statistics["total_measurements_count"] = total_measurements_count
+        general_statistics["valid_measurements_count"] = valid_measurements_count
+
+        # Origin countries
+        origin_countries = results_df["origin_country_code"].unique()
+        origin_countries_number = len(origin_countries)
+        general_statistics["origin_countries_number"] = origin_countries_number
+
+        # Save the general statistics
+        report_data["general_statistics"] = general_statistics
+
+
+        ## Save the report
         dict_to_json_file(
             dict_to_save=report_data,
             file_path=CAMPAIGN_ANALYSIS_REPORT_FILEPATH,
@@ -219,17 +250,20 @@ class AnalysisModule:
         rtt_percentile_95 = np.percentile(rtt_values_ordered, 95)
 
         # RTTs threshold for good service
-        rtts_above_100_ms = int(
+        rtts_under_or_equal_100_ms = int(
             (rtt_values_ordered <= 100).sum()
         )
-        rtts_above_good_count = int(
+        rtts_above_100_ms = int(
+            (rtt_values_ordered > 100).sum()
+        )
+        rtts_under_or_equal_good_count = int(
             (rtt_values_ordered <= GOOD_RESPONSE_TIME_LIMIT_MS).sum()
         )
-        rtts_above_good_percentage = 100*(rtts_above_good_count / valid_measurements_count)
-        rtts_above_mid_count = int(
+        rtts_under_or_equal_good_percentage = 100*(rtts_under_or_equal_good_count / valid_measurements_count)
+        rtts_under_or_equal_mid_count = int(
             (rtt_values_ordered <= MID_RESPONSE_TIME_LIMIT_MS).sum()
         )
-        rtts_above_mid_percentage = 100*(rtts_above_mid_count / valid_measurements_count)
+        rtts_under_or_equal_mid_percentage = 100*(rtts_under_or_equal_mid_count / valid_measurements_count)
 
         return {
             "total_measurements": total_measurements_count,
@@ -244,10 +278,11 @@ class AnalysisModule:
             "rtt_percentile_90": rtt_percentile_90,
             "rtt_percentile_95": rtt_percentile_95,
             "rtts_above_100_ms": rtts_above_100_ms,
-            "rtts_above_good_count": rtts_above_good_count,
-            "rtts_above_good_percentage": rtts_above_good_percentage,
-            "rtts_above_mid_count": rtts_above_mid_count,
-            "rtts_above_mid_percentage": rtts_above_mid_percentage,
+            "rtts_under_or_equal_100_ms": rtts_under_or_equal_100_ms,
+            "rtts_under_or_equal_good_count": rtts_under_or_equal_good_count,
+            "rtts_under_or_equal_good_percentage": rtts_under_or_equal_good_percentage,
+            "rtts_under_or_equal_mid_count": rtts_under_or_equal_mid_count,
+            "rtts_under_or_equal_mid_percentage": rtts_under_or_equal_mid_percentage,
         }
 
     def generate_cdfs_for_regions_in_domains(
