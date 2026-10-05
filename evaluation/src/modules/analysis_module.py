@@ -213,9 +213,15 @@ class AnalysisModule:
         rtt_min = np.min(rtt_values_ordered)
         rtt_mean = np.mean(rtt_values_ordered)
         rtt_median = np.median(rtt_values_ordered)
+        rtt_percentile_25 = np.percentile(rtt_values_ordered, 25)
+        rtt_percentile_75 = np.percentile(rtt_values_ordered, 75)
         rtt_percentile_90 = np.percentile(rtt_values_ordered, 90)
+        rtt_percentile_95 = np.percentile(rtt_values_ordered, 95)
 
         # RTTs threshold for good service
+        rtts_above_100_ms = int(
+            (rtt_values_ordered <= 100).sum()
+        )
         rtts_above_good_count = int(
             (rtt_values_ordered <= GOOD_RESPONSE_TIME_LIMIT_MS).sum()
         )
@@ -233,7 +239,11 @@ class AnalysisModule:
             "rtt_min": rtt_min,
             "rtt_mean": rtt_mean,
             "rtt_median": rtt_median,
+            "rtt_percentile_25": rtt_percentile_25,
+            "rtt_percentile_75": rtt_percentile_75,
             "rtt_percentile_90": rtt_percentile_90,
+            "rtt_percentile_95": rtt_percentile_95,
+            "rtts_above_100_ms": rtts_above_100_ms,
             "rtts_above_good_count": rtts_above_good_count,
             "rtts_above_good_percentage": rtts_above_good_percentage,
             "rtts_above_mid_count": rtts_above_mid_count,
