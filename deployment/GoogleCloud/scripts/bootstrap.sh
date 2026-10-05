@@ -11,8 +11,8 @@ REGIONS_AFRICA=(
 )
 
 REGIONS_NORTHAMERICA=(
-    northamerica-northeast1     # Toronto
-    northamerica-northeast2     # Montreal
+    northamerica-northeast1     # Montreal
+    northamerica-northeast2     # Toronto
     northamerica-south1         # Mexico
 )
 
